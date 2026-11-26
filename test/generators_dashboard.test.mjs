@@ -56,6 +56,8 @@ test('Mission Control dashboard binds to 127.0.0.1 and serves HTML + JSON APIs',
     assert.equal(htmlRes.status, 200);
     const html = await htmlRes.text();
     assert.ok(html.includes('Mission Control'));
+    assert.ok(html.includes('The quickest way'));
+    assert.equal(/purple|violet|linear-gradient|🚀/i.test(html), false, 'UI must not use purple gradients or emojis');
 
     const apiRes = await fetch(`${base}/api/projects`);
     assert.equal(apiRes.status, 200);
@@ -63,6 +65,14 @@ test('Mission Control dashboard binds to 127.0.0.1 and serves HTML + JSON APIs',
     assert.equal(data.projects.length, 1);
     assert.equal(data.projects[0].name, 'mc-app');
     assert.equal(data.projects[0].checklist.totalCatalogItems, 50);
+    assert.ok(data.projects[0].checklist.items.every((it) => Array.isArray(it.guide?.steps) && it.guide.steps.length >= 1));
+
+    const cfgRes = await fetch(`${base}/api/project/config`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ root: repo, key: 'payments', value: true }),
+    });
+    assert.equal(cfgRes.status, 200);
 
     const toggleRes = await fetch(`${base}/api/project/checklist`, {
       method: 'POST',
@@ -70,6 +80,29 @@ test('Mission Control dashboard binds to 127.0.0.1 and serves HTML + JSON APIs',
       body: JSON.stringify({ root: repo, id: 'web-landing-page', action: 'done' }),
     });
     assert.equal(toggleRes.status, 200);
+
+    const applyRes = await fetch(`${base}/api/project/apply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ root: repo, legal: true }),
+    });
+    assert.equal(applyRes.status, 200);
+    const applied = await applyRes.json();
+    assert.ok(applied.written.length >= 1);
+
+    const undoRes = await fetch(`${base}/api/project/undo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ root: repo }),
+    });
+    assert.equal(undoRes.status, 200);
+
+    const resetRes = await fetch(`${base}/api/project/checklist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ root: repo, id: 'web-landing-page', action: 'reset' }),
+    });
+    assert.equal(resetRes.status, 200);
   } finally {
     await new Promise((resolve) => server.close(resolve));
     process.env.SHIPLAUNCHPAD_HOME = prevHome;

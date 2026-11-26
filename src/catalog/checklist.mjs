@@ -1,3 +1,5 @@
+import { getGuideForItem } from './guides.mjs';
+
 /**
  * Full 50-item production readiness checklist across the 8 categories from shiplaunchpad.com:
  * web (6) + stores (10) + security (7) + monitoring (4) + legal (3) + payments (6) + build (6) + dashboard (8) = 50.
@@ -449,18 +451,18 @@ export function evaluateChecklist({ detection, audit, state, config }) {
   const playTest = state?.playClosedTest || null;
   const applied = Boolean(state?.lastApplyAt);
 
-  const items = CHECKLIST_ITEMS.map((item) => {
+  const rawItems = CHECKLIST_ITEMS.map((item) => {
     const applicable = appliesToSurfaces(item, surfaces);
     if (!applicable || manualWaived.has(item.id)) {
-      return { ...item, status: 'na', reason: applicable ? 'Marked not applicable' : 'Does not apply to detected surfaces' };
+      return { ...item, status: 'na', reason: applicable ? 'Marked not applicable' : 'Does not apply to detected surfaces', manualOverride: manualWaived.has(item.id) ? 'na' : null };
     }
     if (manualDone.has(item.id)) {
-      return { ...item, status: 'pass', reason: 'Marked done by owner' };
+      return { ...item, status: 'pass', reason: 'Marked done by owner', manualOverride: 'done' };
     }
 
     const finding = findingsById.get(item.id);
     if (finding && (finding.severity === 'critical' || finding.severity === 'warn')) {
-      return { ...item, status: 'fail', reason: finding.message, fix: finding.fix };
+      return { ...item, status: 'fail', severity: finding.severity, reason: finding.message, fix: finding.fix };
     }
 
     // Evaluate automated / state-driven items
@@ -692,8 +694,22 @@ export function evaluateChecklist({ detection, audit, state, config }) {
     return { ...item, status, reason };
   });
 
+  const items = rawItems.map((it) => {
+    const guide = getGuideForItem(it);
+    const isBlocker = it.status === 'fail' ? it.severity === 'critical' || guide.blocksRelease : guide.blocksRelease && it.status !== 'pass' && it.status !== 'na';
+    let bucket = 'na';
+    if (it.status === 'pass') bucket = 'done';
+    else if (it.status !== 'na') {
+      bucket = it.status === 'fail' || guide.owner !== 'auto' ? 'for_you' : 'auto';
+    }
+    return { ...it, guide, blocksRelease: isBlocker, bucket };
+  });
+
   const applicableItems = items.filter((i) => i.status !== 'na');
   const passedItems = applicableItems.filter((i) => i.status === 'pass');
+  const forYouItems = applicableItems.filter((i) => i.bucket === 'for_you');
+  const autoItems = applicableItems.filter((i) => i.bucket === 'auto');
+  const blockingItems = applicableItems.filter((i) => i.status !== 'pass' && i.blocksRelease);
   const scorePct = applicableItems.length ? Math.round((passedItems.length / applicableItems.length) * 100) : 100;
 
   const byCategory = CHECKLIST_CATEGORIES.map((cat) => {
@@ -713,6 +729,13 @@ export function evaluateChecklist({ detection, audit, state, config }) {
     totalCatalogItems: CHECKLIST_ITEMS.length,
     applicableCount: applicableItems.length,
     passedCount: passedItems.length,
+    remainingCount: applicableItems.length - passedItems.length,
+    summary: {
+      done: passedItems.length,
+      forYou: forYouItems.length,
+      auto: autoItems.length,
+      blocking: blockingItems.length,
+    },
     scorePct,
     byCategory,
     items,

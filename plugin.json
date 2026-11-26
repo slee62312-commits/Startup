@@ -1,0 +1,15 @@
+{
+  "name": "shiplaunchpad",
+  "displayName": "ShipLaunchpad",
+  "version": "1.0.0",
+  "description": "Ship any app from laptop to live: detects 60 stacks across iOS, Android, macOS, Web, Static Sites & Backends, enforces a 50-item production checklist, wires GitHub Actions, OS keychain vault, pre-flight security/App Review audits, cost & wait calculator, safe undo, and Mission Control dashboard.",
+  "author": "slee62312-commits",
+  "homepage": "https://github.com/slee62312-commits/Startup",
+  "repository": "https://github.com/slee62312-commits/Startup",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Run /ship-onboard to inspect this repo and prepare it for production launch",
+    "Run /ship-status to score this app against the 50-item readiness checklist",
+    "Open Mission Control (/ship-dashboard) and calculate launch costs with /ship-cost"
+  ]
+}

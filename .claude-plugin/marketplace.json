@@ -1,0 +1,17 @@
+{
+  "name": "shiplaunchpad",
+  "owner": {
+    "name": "slee62312-commits",
+    "url": "https://github.com/slee62312-commits/Startup"
+  },
+  "description": "Open production-launch plugin inspired by shiplaunchpad.com.",
+  "plugins": [
+    {
+      "name": "shiplaunchpad",
+      "source": "./",
+      "description": "60-stack detector, 50-item production checklist, CI/CD & store workflows, OS keychain/encrypted vault, pre-flight security/App Review audits, cost calculator, safe undo, and Mission Control dashboard.",
+      "category": "engineering"
+    }
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "shiplaunchpad",
+  "version": "1.0.0",
+  "description": "Open local production-shipping plugin inspired by shiplaunchpad.com: multi-surface stack detection (60 stacks), 50-item readiness checklist, CI/CD & store pipelines, OS keychain/encrypted vault, pre-flight security & App Review audits, cost calculator, safe undo, and Mission Control dashboard.",
+  "type": "module",
+  "bin": {
+    "shiplaunchpad": "./bin/shiplaunchpad.mjs"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "start": "node ./bin/shiplaunchpad.mjs dashboard"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slee62312-commits/Startup"
+  },
+  "homepage": "https://github.com/slee62312-commits/Startup",
+  "license": "MIT"
+}

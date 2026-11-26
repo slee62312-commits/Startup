@@ -1,0 +1,22 @@
+{
+  "name": "shiplaunchpad",
+  "version": "1.0.0",
+  "description": "Ship any app from laptop to live: detects 60 stacks, scores a 50-item production checklist, wires CI/CD, vault secrets, security/App Review audits, cost calculator, safe undo, and Mission Control.",
+  "author": {
+    "name": "slee62312-commits",
+    "url": "https://github.com/slee62312-commits/Startup"
+  },
+  "homepage": "https://github.com/slee62312-commits/Startup",
+  "repository": "https://github.com/slee62312-commits/Startup",
+  "license": "MIT",
+  "skills": [
+    "./skills/ship-onboard",
+    "./skills/ship-setup",
+    "./skills/ship-status",
+    "./skills/ship-release",
+    "./skills/ship-doctor",
+    "./skills/ship-dashboard",
+    "./skills/ship-cost",
+    "./skills/ship-undo"
+  ]
+}

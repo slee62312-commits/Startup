@@ -527,7 +527,7 @@ export function evaluateChecklist({ detection, audit, state, config }) {
       case 'stores-account-deletion':
       case 'stores-sign-in-with-apple':
       case 'stores-permissions-privacy-manifest':
-      case 'stores-no-secret-leaks':
+      case 'security-no-secret-leaks':
       case 'security-db-access-rules':
       case 'security-auth-redirects-audience':
       case 'security-custom-smtp':
@@ -543,7 +543,7 @@ export function evaluateChecklist({ detection, audit, state, config }) {
         } else if (finding?.status === 'manual') {
           status = 'manual';
           reason = finding.message;
-        } else if (item.id === 'stores-no-secret-leaks') {
+        } else if (item.id === 'security-no-secret-leaks') {
           status = 'pass';
           reason = 'Zero leaked secrets found in repo scan';
         }

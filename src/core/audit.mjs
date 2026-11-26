@@ -101,7 +101,7 @@ export function runAudit(repoRoot, detection, config = {}) {
   } else {
     findings.push({
       id: 'no-secret-leaks',
-      checkId: 'stores-no-secret-leaks',
+      checkId: 'security-no-secret-leaks',
       severity: 'info',
       status: 'pass',
       message: 'No hardcoded secret patterns detected in source files.',

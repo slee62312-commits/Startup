@@ -456,6 +456,12 @@ export function renderDashboardHtml() {
     font-family: var(--font-mono); font-size: 12px; color: var(--text);
   }
   .cmd-box code { overflow-x: auto; white-space: nowrap; }
+  .inline-code {
+    font-family: var(--font-mono); font-size: 12px;
+    padding: 1px 5px; border-radius: 5px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); word-break: break-word;
+  }
 
   .box-card {
     background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
@@ -627,6 +633,10 @@ const ICONS = {
 
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtInline(s) {
+  return esc(s).replace(/\`([^\`]+)\`/g, '<code class="inline-code">$1</code>');
 }
 
 function showToast(msg) {
@@ -811,7 +821,7 @@ function renderHomeView(p) {
             <div class="next-card \${nextItem.blocksRelease ? 'is-blocking' : ''}" onclick="openItemDrawer('\${esc(nextItem.id)}')">
               <div style="min-width:0;flex:1">
                 <div class="row-title"><span class="next-tag">NEXT</span>\${esc(nextItem.title)}</div>
-                <div class="row-desc">\${esc(nextItem.status === 'fail' ? nextItem.reason : nextItem.why)}</div>
+                <div class="row-desc">\${fmtInline(nextItem.status === 'fail' ? nextItem.reason : nextItem.why)}</div>
                 <div class="pill-row">
                   \${ownerPill(nextItem.guide)}
                   \${nextItem.blocksRelease ? '<span class="tag tag-danger">Blocks release</span>' : ''}
@@ -1107,10 +1117,10 @@ function renderChecksView(p) {
                   <div class="task-icon" style="\${item.status === 'pass' ? 'color:var(--ok)' : ''}">\${item.status === 'pass' ? ICONS.check : (ICONS[cat.id] || ICONS.build)}</div>
                   <div style="min-width:0">
                     <div class="row-title">\${esc(item.title)}</div>
-                    <div class="row-desc">\${esc(item.reason)}</div>
+                    <div class="row-desc">\${fmtInline(item.reason)}</div>
                   </div>
                 </div>
-                <div style="display:flex;gap:6px;align-items:center">
+                <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
                   \${item.status === 'pass'
                     ? '<span class="tag tag-ok">Done</span>'
                     : (item.blocksRelease ? '<span class="tag tag-danger">Blocks release</span>' : '') + \`<button class="btn btn-sm" type="button" onclick="event.stopPropagation();openItemDrawer('\${esc(item.id)}')">\${esc(item.guide.ctaLabel)}</button>\`}
@@ -1230,8 +1240,8 @@ function renderItemDrawer(itemId) {
     </div>
 
     <div class="drawer-body">
-      <p class="drawer-summary">\${esc(item.why)}</p>
-      \${item.status === 'fail' ? \`<div class="drawer-reason"><strong>Audit detected:</strong> \${esc(item.reason)}\${item.fix ? '<br><br><strong>Fix:</strong> ' + esc(item.fix) : ''}</div>\` : ''}
+      <p class="drawer-summary">\${fmtInline(item.why)}</p>
+      \${item.status === 'fail' ? \`<div class="drawer-reason"><strong>Audit detected:</strong> \${fmtInline(item.reason)}\${item.fix ? '<br><br><strong>Fix:</strong> ' + fmtInline(item.fix) : ''}</div>\` : ''}
       \${decisionHtml}
       \${vaultHtml}
 
@@ -1242,8 +1252,8 @@ function renderItemDrawer(itemId) {
             <div class="tl-step">
               <div class="tl-num \${g.owner === 'auto' ? 'auto' : ''}">\${idx + 1}</div>
               <div>
-                <div class="tl-title">\${esc(st.title)}</div>
-                <div class="tl-detail">\${esc(st.detail)}</div>
+                <div class="tl-title">\${fmtInline(st.title)}</div>
+                <div class="tl-detail">\${fmtInline(st.detail)}</div>
                 \${idx === 0 ? crumbsHtml : ''}
               </div>
             </div>\`).join('')}
